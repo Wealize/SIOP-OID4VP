@@ -537,8 +537,8 @@ export interface DidAuthValidationResponse {
 
 export interface VerifiedIDToken {
   jwt: string;
-  didResolutionResult: DIDResolutionResult;
-  signer: VerificationMethod;
+  // didResolutionResult: DIDResolutionResult;
+  // signer: VerificationMethod;
   issuer: string;
   payload: IDTokenPayload;
   verifyOpts: VerifyAuthorizationResponseOpts;

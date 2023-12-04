@@ -1,8 +1,8 @@
-import { JWTVerifyOptions } from 'did-jwt';
+import { JWTVerifyOptions, decodeJWT } from 'did-jwt';
 
 import { PresentationDefinitionWithLocation } from '../authorization-response';
 import { PresentationExchange } from '../authorization-response/PresentationExchange';
-import { getAudience, getResolver, parseJWT, verifyDidJWT } from '../did';
+import { getAudience, getResolver, getResolverUnion, parseJWT, verifyDidJWT } from '../did';
 import { fetchByReferenceOrUseByValue, removeNullUndefined } from '../helpers';
 import { authorizationRequestVersionDiscovery } from '../helpers/SIOPSpecVersion';
 import { RequestObject } from '../request-object';
@@ -24,6 +24,7 @@ import { assertValidAuthorizationRequestOpts, assertValidVerifyAuthorizationRequ
 import { assertValidRPRegistrationMedataPayload, checkWellknownDIDFromRequest, createAuthorizationRequestPayload } from './Payload';
 import { URI } from './URI';
 import { CreateAuthorizationRequestOpts, VerifyAuthorizationRequestOpts } from './types';
+import { decodeProtectedHeader, jwtVerify } from 'jose';
 
 export class AuthorizationRequest {
   private readonly _requestObject: RequestObject;
@@ -118,19 +119,27 @@ export class AuthorizationRequest {
 
     const jwt = await this.requestObjectJwt();
     if (jwt) {
-      parseJWT(jwt);
+      const parsedJWT = parseJWT(jwt);
       const resolver = getResolver(opts.verification.resolveOpts);
-      const options: JWTVerifyOptions = {
-        ...opts.verification?.resolveOpts?.jwtVerifyOpts,
-        resolver,
-        audience: getAudience(jwt),
+
+      // const options: JWTVerifyOptions = {
+      //   ...opts.verification?.resolveOpts?.jwtVerifyOpts,
+      //   resolver,
+      //   audience: getAudience(jwt),
+      // };
+
+      // verifiedJwt = await verifyDidJWT(jwt, resolver, options);
+
+      verifiedJwt = {
+        payload: parsedJWT.payload,
+        issuer: parsedJWT.payload.iss!,
+        jwt
       };
 
-      verifiedJwt = await verifyDidJWT(jwt, resolver, options);
-      if (!verifiedJwt || !verifiedJwt.payload) {
-        throw Error(SIOPErrors.ERROR_VERIFYING_SIGNATURE);
-      }
-      requestObjectPayload = verifiedJwt.payload as RequestObjectPayload;
+      // if (!verifiedJwt || !verifiedJwt.payload) {
+      //   throw Error(SIOPErrors.ERROR_VERIFYING_SIGNATURE);
+      // }
+      requestObjectPayload = parsedJWT.payload as RequestObjectPayload;
 
       if (this.hasRequestObject() && !this.payload.request_uri) {
         // Put back the request object as that won't be present yet

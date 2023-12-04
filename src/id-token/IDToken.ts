@@ -113,11 +113,12 @@ export class IDToken {
 
     const { header, payload } = parseJWT(await this.jwt());
     this.assertValidResponseJWT({ header, payload });
-
-    const verifiedJWT = await verifyDidJWT(await this.jwt(), getResolver(verifyOpts.verification.resolveOpts), {
-      ...verifyOpts.verification.resolveOpts?.jwtVerifyOpts,
-      audience: verifyOpts.audience ?? verifyOpts.verification.resolveOpts?.jwtVerifyOpts?.audience,
-    });
+    
+    // TODO: MODIFIED - REMOVED DID RESOLVE
+    // const verifiedJWT = await verifyDidJWT(await this.jwt(), getResolver(verifyOpts.verification.resolveOpts), {
+    //   ...verifyOpts.verification.resolveOpts?.jwtVerifyOpts,
+    //   audience: verifyOpts.audience ?? verifyOpts.verification.resolveOpts?.jwtVerifyOpts?.audience,
+    // });
 
     const issuerDid = getSubDidFromPayload(payload);
     if (verifyOpts.verification.checkLinkedDomain && verifyOpts.verification.checkLinkedDomain !== CheckLinkedDomain.NEVER) {
@@ -125,7 +126,10 @@ export class IDToken {
     } else if (!verifyOpts.verification.checkLinkedDomain) {
       await validateLinkedDomainWithDid(issuerDid, verifyOpts.verification);
     }
-    const verPayload = verifiedJWT.payload as IDTokenPayload;
+    // TODO: MODIFIED - REMOVED DID RESOLVE
+    // const verPayload = verifiedJWT.payload as IDTokenPayload;
+    const verPayload = payload as IDTokenPayload;
+
     this.assertValidResponseJWT({ header, verPayload: verPayload, audience: verifyOpts.audience });
     // Enforces verifyPresentationCallback function on the RP side,
     if (!verifyOpts?.verification.presentationVerificationCallback) {
@@ -133,8 +137,8 @@ export class IDToken {
     }
     return {
       jwt: await this.jwt(),
-      didResolutionResult: verifiedJWT.didResolutionResult,
-      signer: verifiedJWT.signer,
+      // didResolutionResult: verifiedJWT.didResolutionResult,
+      // signer: verifiedJWT.signer,
       issuer: issuerDid,
       payload: { ...verPayload },
       verifyOpts,

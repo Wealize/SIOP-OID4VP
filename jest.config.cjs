@@ -7,9 +7,17 @@ module.exports = {
     rootDir: ".",
     roots: ["<rootDir>/src/", "<rootDir>/test/"],
     testMatch: ["**/?(*.)+(spec|test).+(ts|tsx|js)"],
-    transform: {
-        "^.+\\.(ts|tsx)?$": "ts-jest",
-    },
+    // transform: {
+    //     "^.+\\.(ts|tsx)?$": "babel-jest",
+    // },
+    // transform: {}
+    testPathIgnorePatterns: ["<rootDir>/node_modules/"],
+    // transform: {
+    //     "node_modules/variables/.+\\.(j|t)sx?$": "ts-jest"
+    //   },
+    // transformIgnorePatterns: [
+    //     "node_modules/(?!variables/.*)"
+    // ],
     moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
     coverageDirectory: "./coverage/",
     collectCoverageFrom: [

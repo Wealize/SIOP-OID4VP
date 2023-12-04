@@ -162,7 +162,6 @@ export const putPresentationSubmissionInLocation = async (
       }
     }
   }
-
   const vps =
     resOpts.presentationExchange?.verifiablePresentations?.map(
       (vp) => CredentialMapper.toWrappedVerifiablePresentation(vp).original as W3CVerifiablePresentation

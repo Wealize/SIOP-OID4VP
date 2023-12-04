@@ -165,7 +165,6 @@ export class RP {
         correlationId,
         subject: authorizationResponse,
       });
-
       const verifiedAuthorizationResponse = await authorizationResponse.verify(verifyAuthenticationResponseOpts);
       this.emitEvent(AuthorizationEvents.ON_AUTH_RESPONSE_VERIFIED_SUCCESS, {
         correlationId,

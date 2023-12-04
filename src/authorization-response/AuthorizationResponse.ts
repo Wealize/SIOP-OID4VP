@@ -112,7 +112,6 @@ export class AuthorizationResponse {
     });
 
     const wrappedPresentations = await extractPresentationsFromAuthorizationResponse(response);
-
     await assertValidVerifiablePresentations({
       presentationDefinitions,
       presentations: wrappedPresentations,
